@@ -1,42 +1,90 @@
-namespace DataStructuresLibrary.Tests;
+namespace DataStructuresLibrary;
 
-using Xunit;
-using DataStructuresLibrary;
-
-public class CustomArrayListTests
+public class CustomArrayList<T> where T : IComparable<T>
 {
-    [Fact]
-    public void Add_ShouldIncreaseCountAndStoreItems()
+    private T[] _items;
+    public int Count { get; private set; }
+
+    // Initializes the array with a default capacity of 4.
+    public CustomArrayList(int initialCapacity = 4)
     {
-        // TODO: Implement test for Add and Get indexing
-        throw new NotImplementedException();
+        _items = new T[initialCapacity];
     }
 
-    [Fact]
-    public void Remove_ShouldShiftElementsCorrectly()
+    // Adds a new item to the end of the array.
+    public void Add(T item)
     {
-        // TODO: Implement test verifying element removal and index shifting
-        throw new NotImplementedException();
+        // Resize the array if it is full.
+        if (Count == _items.Length)
+        {
+            Array.Resize(ref _items, _items.Length * 2);
+        }
+
+        _items[Count] = item;
+        Count++;
     }
 
-    [Fact]
-    public void Search_ShouldReturnCorrectIndex_WhenItemExists()
+    // Removes the first matching item from the array.
+    public bool Remove(T item)
     {
-        // TODO: Test Search returning zero-based index for existing element
-        throw new NotImplementedException();
+        int index = Search(item);
+
+        // Return false if the item is not found.
+        if (index == -1)
+        {
+            return false;
+        }
+
+        // Shift the remaining elements to the left.
+        for (int i = index; i < Count - 1; i++)
+        {
+            _items[i] = _items[i + 1];
+        }
+
+        Count--;
+        return true;
     }
 
-    [Fact]
-    public void Search_ShouldReturnMinusOne_WhenItemDoesNotExist()
+    // Returns the item at the specified index.
+    public T Get(int index)
     {
-        // TODO: Test Search returning -1 when element is absent
-        throw new NotImplementedException();
+        if (index < 0 || index >= Count)
+        {
+            throw new IndexOutOfRangeException();
+        }
+
+        return _items[index];
     }
 
-    [Fact]
-    public void Sort_ShouldOrderElementsInAscendingSequence()
+    // Searches for an item and returns its index.
+    public int Search(T item)
     {
-        // TODO: Test Sort ordering an unsorted CustomArrayList<int>
-        throw new NotImplementedException();
+        for (int i = 0; i < Count; i++)
+        {
+            if (_items[i].CompareTo(item) == 0)
+            {
+                return i;
+            }
+        }
+
+        // Return -1 if the item does not exist.
+        return -1;
+    }
+
+    // Sorts the array in ascending order using Bubble Sort.
+    public void Sort()
+    {
+        for (int i = 0; i < Count - 1; i++)
+        {
+            for (int j = 0; j < Count - i - 1; j++)
+            {
+                if (_items[j].CompareTo(_items[j + 1]) > 0)
+                {
+                    T temp = _items[j];
+                    _items[j] = _items[j + 1];
+                    _items[j + 1] = temp;
+                }
+            }
+        }
     }
 }
